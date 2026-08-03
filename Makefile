@@ -1,6 +1,8 @@
 TARGET	?= project_1
 AUTHOR 	?= Elementro
 
+MCU	?=STM32H723xx
+
 
 #Сюда вписывать сурсы
 SRC	= \	
@@ -12,7 +14,7 @@ SRC	= \
 INCLUDES= \
 	  -Iinc\
 	  -ICMSIS/Include \
-	  -ICMSIS/Divice/ST/STM32H7xx/Include
+	  
 
 BUILD_DIR	= build
 
@@ -22,13 +24,26 @@ CC 	= $(PREFIX)-gcc
 OBJCOPY	= $(PREFIX)-objcopy
 SIZE	= $(PREFIX)-size
 
+MCU_FLAGS = \
+	    -mthumb
 
-ASM = startup/startup_stm32h723vgtx.s
+ifeq ($(MCU),STM32H723xx)
+	ASM_DIR	 = startup/startup_stm32h723vgtx.s
+	
+	INCLUDES +=-ICMSIS/Device/ST/STM32H7xx/Include\
+ 
+	DEFS	=\
+		 -DSTM32H723xx \
+		 -DUSE_FULL_LL_DRIVER
+	MCU_FLAGS += \
+		    -mcpu=cortex-m7 \
+		    -mfpu=fpv5-d16 \
+		    -mfloat-abi=hard
+else
+$(error Неизвестный MCU: $(MCU))
+endif
 
 
-DEFS	=\
-	 -DSTM32H723xx \
-	 -DUSE_FULL_LL_DRIVER
 
 
 
@@ -36,8 +51,11 @@ DEFS	=\
 all :
 	@echo Project name: 	$(TARGET)
 	@echo Creator: 		$(AUTHOR)
+	@echo $(MCU_FLAGS)	
 
-	@mkdir -p $(BUILD_DIR)
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
 clean:
 	rm -rf	$(BUILD_DIR)
