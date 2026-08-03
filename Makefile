@@ -23,6 +23,9 @@ OBJCOPY	= $(PREFIX)-objcopy
 SIZE	= $(PREFIX)-size
 
 
+ASM = startup/startup_stm32h723vgtx.s
+
+
 DEFS	=\
 	 -DSTM32H723xx \
 	 -DUSE_FULL_LL_DRIVER
