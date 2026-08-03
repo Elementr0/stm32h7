@@ -57,5 +57,8 @@ all :
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+$(BUILD_DIRi)/%.o : startup/%.s | $(BUILD_DIR)
+	$(CC) $
+
 clean:
 	rm -rf	$(BUILD_DIR)
