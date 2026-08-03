@@ -1,5 +1,5 @@
 TARGET	?= project_1
-
+AUTHOR 	?= Elementro
 
 
 #Сюда вписывать сурсы
@@ -28,5 +28,13 @@ DEFS	=\
 	 -DUSE_FULL_LL_DRIVER
 
 
-all : 
-	@echo	$(TARGET)
+
+
+all :
+	@echo Project name: 	$(TARGET)
+	@echo Creator: 		$(AUTHOR)
+
+	@mkdir -p $(BUILD_DIR)
+
+clean:
+	rm -rf	$(BUILD_DIR)
