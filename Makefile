@@ -30,7 +30,7 @@ ASM_FLAGS  += -mthumb $(MCU_FLAGS)
 BUILD_DIR = build
 
 C_SRC   = src/main.c \
-          src/syscalls.c   # Добавьте syscalls.c
+		  src/system.c
 
 ASM_SRC = startup/startup_stm32h723vgtx.s
 
@@ -49,6 +49,7 @@ INCLUDES = -Iinc \
 all: $(BUILD_DIR)/$(TARGET).elf
 	@echo "Project name: $(TARGET)"
 	@echo "Creator:      $(AUTHOR)"
+	$(SIZE) $(BUILD_DIR)/$(TARGET).elf
 
 $(BUILD_DIR)/%.o : %.s
 	@mkdir -p $(dir $@)

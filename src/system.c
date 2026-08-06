@@ -1,5 +1,11 @@
+#include "stm32h723xx.h"
 #include <sys/stat.h>
 #include <errno.h>
+
+void SystemInit(void) {
+    // Включить FPU
+    SCB->CPACR |= ((3UL << 10*2) | (3UL << 11*2));
+}
 
 
 void _init(void) {
