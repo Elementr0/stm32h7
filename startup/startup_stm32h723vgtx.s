@@ -26,7 +26,7 @@
     
   .syntax unified
   .cpu cortex-m7
-  .fpu softvfp
+  .fpu fpv5-d16
   .thumb
 
 .global  g_pfnVectors
@@ -61,7 +61,7 @@ Reset_Handler:
   ldr   sp, =_estack      /* set stack pointer */
 
 /* Call the ExitRun0Mode function to configure the power supply */
-  bl  ExitRun0Mode
+// bl  ExitRun0Mode
 /* Copy the data segment initializers from flash to SRAM */  
   movs  r1, #0
   b  LoopCopyDataInit
