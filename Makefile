@@ -46,7 +46,9 @@ INCLUDES = -Iinc \
 #=========================================================
 
 #=============== ЦЕЛИ ====================================
-all: $(BUILD_DIR)/$(TARGET).elf
+all: 	$(BUILD_DIR)/$(TARGET).elf \
+	$(BUILD_DIR)/$(TARGET).bin \
+	$(BUILD_DIR)/$(TARGET).hex 
 	@echo "==============================================="
 	@echo "Project name: $(TARGET)"
 	@echo "Creator:      $(AUTHOR)"
@@ -62,32 +64,17 @@ $(BUILD_DIR)/%.o : %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(C_FLAGS) $(INCLUDES) -c $< -o $@
 
+
 $(BUILD_DIR)/$(TARGET).elf : $(OBJS)
 	$(CC) $(LD_FLAGS) -o $@ $(OBJS)
 
+$(BUILD_DIR)/$(TARGET).bin : $(BUILD_DIR)/$(TARGET).elf
+	$(OBJCOPY) -O binary $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).bin 
+
+$(BUILD_DIR)/$(TARGET).hex : $(BUILD_DIR)/$(TARGET).elf
+	$(OBJCOPY) -O ihex $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex 
+
+
 clean:
 	rm -rf $(BUILD_DIR)
-
-
-flash: all
-	openocd -f interface/stlink-dap.cfg -f target/stm32h7x.cfg \
-		-c "transport select dapdirect_swd" \
-		-c "adapter speed 400" \
-		-c "reset_config none separate" \
-		-c "init" -c "halt" \
-		-c "flash erase_address 0x08000000 0x20000" \
-		-c "flash write_image $(BUILD_DIR)/$(TARGET).elf" \
-		-c "reset" -c "shutdown"
-
-# OpenOCD с SWO: stlink dapdirect (как в flash), свой SWO-объект на блоке H7 0x5C003000
-openocd-swo:
-	openocd -f interface/stlink-dap.cfg -f target/stm32h7x.cfg \
-		-c "transport select dapdirect_swd" \
-		-c "adapter speed 1000" \
-		-c "tpiu create swotrace -dap stm32h7x.dap -ap-num 2 -baseaddr 0x5C003000 -protocol uart -traceclk 32000000 -pin-freq 2000000 -output build/swo.dat" \
-		-c "init; halt" \
-		-c "itm port 0 on" \
-		-c "swotrace enable" \
-		-c "reset halt; resume"
-
 .PHONY: all clean
