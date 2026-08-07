@@ -5,4 +5,5 @@ STM32H7
 make
 make flash
 make flash_bin
+make clean
 ```
