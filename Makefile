@@ -81,4 +81,4 @@ flash_bin: $(BUILD_DIR)/$(TARGET).bin
 
 clean:
 	rm -rf $(BUILD_DIR)
-.PHONY: all clean flash
+.PHONY: all clean flash flash_bin
