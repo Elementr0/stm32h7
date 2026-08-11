@@ -30,7 +30,7 @@ ASM_FLAGS  += -mthumb $(MCU_FLAGS)
 BUILD_DIR = build
 
 C_SRC   = 	src/main.c \
-		src/system.c
+		src/system.c 
 
 ASM_SRC = startup/startup_stm32h723vgtx.s
 
