@@ -1,82 +1,28 @@
 #include "stm32h7xx.h"
 
-void USART1_Init(void);
-void USART1_SendChar(char c);
-void USART1_SendString(const char *str);
+#define PIN 3
+
+void delay_ms(uint32_t ms);
+
 
 int main(void)
 {
-    USART1_Init();
-
-    USART1_SendString("READY\r\n");
+    RCC->AHB4ENR |= RCC_AHB4ENR_GPIOEEN;
+    
+    GPIOE->MODER &= ~(0x3 << (PIN * 2));
+    GPIOE->MODER |= (0x1 << (PIN * 2));
+    GPIOE->OSPEEDR &= ~(0x3 << (PIN * 2));
+    GPIOE->OSPEEDR |= (0x2 << (PIN * 2));
+    GPIOE->PUPDR &= ~(0x3 << (PIN * 2));
+    
+    GPIOE->BSRR = (0x1 << (PIN + 16)); // Выключен
 
     while (1)
     {
-        if (USART1->ISR & USART_ISR_RXNE_RXFNE)
-        {
-            char c = USART1->RDR;
-            USART1_SendChar(c);
-        }
+        GPIOE->BSRR = (0x1 << PIN);
+        delay_ms(1500); // 500 мс
+        
+        GPIOE->BSRR = (0x1 << (PIN + 16));
+        delay_ms(1500); // 500 мс
     }
-}
-
-void USART1_Init(void)
-{
-    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-    RCC->AHB4ENR |= RCC_AHB4ENR_GPIOAEN;
-
-    GPIOA->MODER &= ~(3 << (9 * 2));
-    GPIOA->MODER |= (2 << (9 * 2));
-    GPIOA->AFR[1] &= ~(0xF << ((9 - 8) * 4));
-    GPIOA->AFR[1] |= (7 << ((9 - 8) * 4));
-
-    GPIOA->MODER &= ~(3 << (10 * 2));
-    GPIOA->MODER |= (2 << (10 * 2));
-    GPIOA->AFR[1] &= ~(0xF << ((10 - 8) * 4));
-    GPIOA->AFR[1] |= (7 << ((10 - 8) * 4));
-
-    USART1->CR1 &= ~USART_CR1_UE;
-    USART1->CR1 = 0;
-    USART1->CR2 = 0;
-    USART1->CR3 = 0;
-
-    USART1->BRR = 0x22B9;
-
-    USART1->CR1 |= USART_CR1_TE;
-    USART1->CR1 |= USART_CR1_RE;
-    USART1->CR1 |= USART_CR1_UE;
-}
-
-void USART1_SendChar(char c)
-{
-    while (!(USART1->ISR & USART_ISR_TXE_TXFNF)) {}
-    USART1->TDR = c;
-}
-
-void USART1_SendString(const char *str)
-{
-    while (*str)
-    {
-        USART1_SendChar(*str++);
-    }
-}
-
-void HardFault_Handler(void)
-{
-    while (1) {}
-}
-
-void MemManage_Handler(void)
-{
-    while (1) {}
-}
-
-void BusFault_Handler(void)
-{
-    while (1) {}
-}
-
-void UsageFault_Handler(void)
-{
-    while (1) {}
-}
+};
