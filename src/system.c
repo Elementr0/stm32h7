@@ -2,31 +2,40 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#define CPU_Freq 64000000U
+#define CPU_Freq_Default 64000000U
 
 #define Tick_Freq_1kHz 1000u
 #define Tick_Freq_Default Tick_Freq_1kHz
-#define Tickrate CPU_Freq / Tick_Freq_Default
+#define Tickrate CPU_Freq_Default / Tick_Freq_Default
 
-volatile uint32_t tick = 0;
+volatile uint32_t _tick = 0;
+volatile uint32_t _cpu_freq = CPU_Freq_Default;
 void SysTick_Handler(void)
 {
-    tick++;
+    _tick++;
 }
 
 void delay_ms(uint32_t ms)
 {
-    uint32_t target = tick + ms;
-    while (tick < target) {
-        // Ожидание
+    uint32_t target = _tick + ms;
+    while (_tick < target) {
     }
+}
+
+uint32_t cpu_freq(void){
+    return _cpu_freq;
 }
 
 void SystemInit(void) {
     // Включить FPU
-    SCB->CPACR |= ((3UL << 10*2) | (3UL << 11*2));
+    SCB -> CPACR |= (0xF << 20);
+    
     SysTick_Config(Tickrate); // 1мс
 }
+
+
+
+
 
 #define SWO_TIMEOUT_CYCLES 16000U
 

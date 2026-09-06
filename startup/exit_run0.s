@@ -9,6 +9,8 @@
     .section .text.ExitRun0Mode,"ax",%progbits
     .global ExitRun0Mode
     .type   ExitRun0Mode, %function
+
+    
 ExitRun0Mode:
     ldr   r0, =0x58024800        /* PWR base */
     ldr   r1, [r0, #0x0C]        /* CR3: enable LDO */
